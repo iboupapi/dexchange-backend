@@ -1,98 +1,175 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+DEXCHANGE – Mini API de gestion de transferts (NestJS)
+Objectif
+Ce projet est une mini-API développée avec NestJS pour gérer des transferts financiers, incluant :
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Authentification par API Key
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Règles métier (frais, statuts, transitions)
 
-## Description
+Simulation de traitement
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+CRUD partiel
 
-## Project setup
+Pagination & filtres
 
-```bash
-$ npm install
-```
+Logs d’audit
 
-## Compile and run the project
+Documentation Swagger
 
-```bash
-# development
-$ npm run start
+Tests unitaires
 
-# watch mode
-$ npm run start:dev
+Durée cible : 6–8h Stack : NestJS + TypeScript + base de données in-memory
 
-# production mode
-$ npm run start:prod
-```
+Installation & Setup
+bash
+# Cloner le repo
+git clone https://github.com/iboupapi/dexchange-backend.git
+cd dexchange-backend
 
-## Run tests
+# Installer les dépendances
+npm install
 
-```bash
-# unit tests
-$ npm run test
+# Lancer l'application
+npm run start:dev
+Authentification
+Tous les endpoints sont protégés par une API Key :
 
-# e2e tests
-$ npm run test:e2e
+Header requis : x-api-key: <clé>
 
-# test coverage
-$ npm run test:cov
-```
+Clé stockée en mémoire (dans le code ou via variable d’environnement)
 
-## Deployment
+Réponses :
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+401 Unauthorized → clé absente
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+403 Forbidden → clé invalide
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+Endpoints principaux
+1. Créer un transfert
+POST /transfers
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Payload :
 
-## Resources
+json
+{
+  "amount": 12500,
+  "currency": "XOF",
+  "channel": "WAVE",
+  "recipient": { "phone": "+221770000000", "name": "Jane Doe" },
+  "metadata": { "orderId": "ABC-123" }
+}
+Statut initial : PENDING
 
-Check out a few resources that may come in handy when working with NestJS:
+Référence générée : TRF-YYYYMMDD-XXXX
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Frais : 0.8% arrondi au supérieur, min 100, max 1500
 
-## Support
+Audit : TRANSFER_CREATED
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+2. Lister les transferts
+GET /transfers
 
-## Stay in touch
+Filtres :
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+status, channel
 
-## License
+minAmount, maxAmount
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+q (recherche dans reference ou recipient.name)
+
+Pagination : cursor-based Query : limit, cursor
+
+3. Récupérer un transfert
+GET /transfers/:id → 404 si non trouvé
+
+4. Simuler le traitement
+POST /transfers/:id/process
+
+Transitions :
+
+PENDING → PROCESSING → SUCCESS | FAILED
+
+Simulation :
+
+70% → SUCCESS + provider_ref
+
+30% → FAILED + error_code
+
+Erreurs :
+
+Si statut final → 409 Conflict
+
+Audit :
+
+TRANSFER_PROCESSING, TRANSFER_SUCCESS, TRANSFER_FAILED
+
+5. Annuler un transfert
+POST /transfers/:id/cancel
+
+Seul PENDING peut être annulé
+
+Sinon → 409 Conflict
+
+Audit : TRANSFER_CANCELED
+
+Tests unitaires
+Calcul des frais
+
+Transition d’état (PENDING → PROCESSING → SUCCESS/FAILED)
+
+bash
+npm run test
+Swagger
+Accessible à : http://localhost:3000/docs
+
+Documente :
+
+Tous les endpoints
+
+Headers requis (x-api-key)
+
+Payloads d’exemple
+
+Structure du projet
+Code
+src/
+  common/
+    guards/api-key.guard.ts
+  transfers/
+    dto/
+    entities/
+    transfers.controller.ts
+    transfers.service.ts
+    transfers.repository.ts  ← stockage in-memory
+    provider.simulator.ts
+  audit/
+    audit.service.ts
+main.ts
+Fichiers utiles
+.env.example : variables d’environnement (clé API, port, etc.)
+
+Choix techniques
+Stockage en mémoire via tableau local (transfers: Transfer[])
+
+Architecture modulaire NestJS
+
+Validation avec class-validator
+
+Simulation via setTimeout pour rendre le traitement réaliste
+
+Audit centralisé via AuditService
+
+Pagination cursor-based pour scalabilité
+
+Ce que je ferais avec plus de temps
+Persistance réelle avec MongoDB ou Postgres
+
+Intégration d’un vrai provider externe (Wave, Orange Money)
+
+Séparation des adapters par canal
+
+Authentification OAuth ou JWT
+
+Tests e2e
+
+Interface admin pour visualiser les transferts
