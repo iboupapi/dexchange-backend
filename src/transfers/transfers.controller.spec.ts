@@ -1,0 +1,23 @@
+import { Test, TestingModule } from "@nestjs/testing"
+import { TransfersController } from "./transfers.controller"
+import { TransfersService } from "./transfers.service"
+import { TransfersRepository } from "./transfers.repository"
+import { ProviderSimulator } from "./provider.similator"
+import { AuditService } from "../audit/audit.service"
+
+describe('TransfersController', () => {
+  let controller: TransfersController;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [TransfersController],
+      providers: [TransfersService, TransfersRepository, ProviderSimulator, AuditService],
+    }).compile();
+
+    controller = module.get<TransfersController>(TransfersController);
+  });
+
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
+});
