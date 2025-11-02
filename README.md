@@ -146,6 +146,7 @@ src/
     audit.service.ts
 main.ts
 Fichiers utiles
+
 .env.example : variables d’environnement (clé API, port, etc.)
 
 Choix techniques
